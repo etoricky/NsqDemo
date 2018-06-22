@@ -1,27 +1,3 @@
-C# JSON
-=======
-
-    {
-      "Id": "d69d7de3-1219-4fe6-9dbf-89e5866b9c26",
-      "TemplateID": "2760F1A1-0DC8-48B5-B9F2-29144E0C5CC9",
-      "KeyValues": [
-        {
-          "field": "{Title}",
-          "value": "Mrs"
-        },
-        {
-          "field": "{LastName}",
-          "value": "Let"
-        },
-        {
-          "field": "{VerifyUrl}",
-          "value": "http://baidu.com"
-        }
-      ],
-      "SendTo": "abssdf@rhyta.com",
-      "Subject": "Verify your email address"
-    }
-
 Explain
 =======
 
@@ -52,6 +28,30 @@ C#
     {
         public string field { get; set; }
         public string value { get; set; }
+    }
+    
+C# JSON
+=======
+
+    {
+      "Id": "d69d7de3-1219-4fe6-9dbf-89e5866b9c26",
+      "TemplateID": "2760F1A1-0DC8-48B5-B9F2-29144E0C5CC9",
+      "KeyValues": [
+        {
+          "field": "{Title}",
+          "value": "Mrs"
+        },
+        {
+          "field": "{LastName}",
+          "value": "Let"
+        },
+        {
+          "field": "{VerifyUrl}",
+          "value": "http://baidu.com"
+        }
+      ],
+      "SendTo": "abssdf@rhyta.com",
+      "Subject": "Verify your email address"
     }
     
 Python json
