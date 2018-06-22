@@ -11,8 +11,9 @@ void Publish(evnsq::Producer* producer) {
 	producer->Publish("test", std::string(timestamp) + " Hello");
 }
 
-void OnReady(evpp::EventLoop* loop, evnsq::Producer* p) {
-	loop->RunEvery(evpp::Duration(0.5), std::bind(&Publish, p));
+void OnReady(evpp::EventLoop* loop, evnsq::Producer* producer) {
+	//loop->RunEvery(evpp::Duration(0.5), std::bind(&Publish, producer));
+	Publish(producer);
 }
 
 struct WSA {
@@ -36,5 +37,6 @@ int main(int argc, char* argv[]) {
 	producer.SetReadyCallback(std::bind(&OnReady, &loop, &producer));
 	producer.ConnectToNSQDs("172.31.118.243:4150");
 	loop.Run();
+	std::cin.get();
 	return 0;
 }
