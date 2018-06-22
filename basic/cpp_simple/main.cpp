@@ -14,6 +14,8 @@ void Publish(evnsq::Producer* producer) {
 void OnReady(evpp::EventLoop* loop, evnsq::Producer* producer) {
 	//loop->RunEvery(evpp::Duration(0.5), std::bind(&Publish, producer));
 	Publish(producer);
+	producer->Close();
+	loop->Stop();
 }
 
 struct WSA {
