@@ -13,7 +13,7 @@ class EmailMessage():
         self.Subject = "Verify your email address"
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, 
-            sort_keys=True, indent=4)
+            sort_keys=False, indent=2)
             
 message = EmailMessage()
 message.KeyValues.append({"field": "{Title}","value": "Mrs"})
@@ -29,3 +29,4 @@ def finish_pub(conn, data):
 writer = nsq.Writer(['172.31.118.243:4150'])
 tornado.ioloop.PeriodicCallback(pub_message, 1000).start()
 nsq.run()
+
