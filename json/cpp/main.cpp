@@ -53,24 +53,27 @@ struct WSA {
 class NsqSender {
 private:
 	WSA wsa;
-	std::string s;
+	std::string ip;
+	std::string topic;
+	std::string data;
 public:
-	NsqSender(const std::string& s) : s(s) {
+	NsqSender(const std::string& ip, const std::string& topic, const std::string& data)
+		: ip(ip), topic(topic), data(data) {
 		evpp::EventLoop loop;
 		evnsq::Producer producer(&loop, evnsq::Option());
 		producer.SetReadyCallback(std::bind(&NsqSender::OnReady, this, &loop, &producer));
-		producer.ConnectToNSQDs("172.31.118.243:4150");
+		producer.ConnectToNSQDs(ip);
 		loop.Run();
 	}
 	void OnReady(evpp::EventLoop* loop, evnsq::Producer* producer) {
-		producer->Publish("test", s);
+		producer->Publish(topic, data);
 		producer->Close();
 		loop->Stop();
 	}
 };
 
 int main(int argc, char* argv[]) {
-	NsqSender sender(GetEmailJson().dump());
+	NsqSender sender("172.31.118.243:4150", "test", GetEmailJson().dump());
 	std::cout << "Started" << '\n';
 	std::cin.get();
 	return 0;
