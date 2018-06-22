@@ -1,11 +1,13 @@
-#define H_OS_WINDOWS
-
 #include "nlohmann/json.hpp"
+using json = nlohmann::json;
+
+#define H_OS_WINDOWS
 #include <evnsq/producer.h>
 #include <evpp/event_loop.h>
+
 #include <string>
 
-using json = nlohmann::json;
+
 
 json GetEmailJson() {
 	json j;
@@ -48,37 +50,28 @@ struct WSA {
 	}
 };
 
-class NsqProducer {
+class NsqSender {
+private:
+	WSA wsa;
+	std::string s;
 public:
-	NsqProducer() {
-		WSA wsa;
+	NsqSender(const std::string& s) : s(s) {
 		evpp::EventLoop loop;
 		evnsq::Producer producer(&loop, evnsq::Option());
-		producer.SetReadyCallback(std::bind(&NsqProducer::OnReady, this, &loop, &producer));
+		producer.SetReadyCallback(std::bind(&NsqSender::OnReady, this, &loop, &producer));
 		producer.ConnectToNSQDs("172.31.118.243:4150");
 		loop.Run();
 	}
-	void Publish(evnsq::Producer* producer) {
-		json m1 = GetEmailJson();
-		json m2 = m1;
-		m2["Id"] = "second";
-		std::vector<std::string> messages;
-		messages.push_back(m1.dump(2));
-		messages.push_back(m2.dump(2));
-		producer->MultiPublish("test", messages);
-	}
-
 	void OnReady(evpp::EventLoop* loop, evnsq::Producer* producer) {
-		//loop->RunEvery(evpp::Duration(0.5), std::bind(&Publish, producer));
-		Publish(producer);
-	}
-	void Send(const std::string& s) {
-
+		producer->Publish("test", s);
+		producer->Close();
+		loop->Stop();
 	}
 };
 
 int main(int argc, char* argv[]) {
-	NsqProducer producer;
+	NsqSender sender(GetEmailJson().dump());
+	std::cout << "Started" << '\n';
 	std::cin.get();
 	return 0;
 }
