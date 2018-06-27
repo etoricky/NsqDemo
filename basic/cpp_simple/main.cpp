@@ -1,5 +1,6 @@
 #define H_OS_WINDOWS
 
+#include "WSA.h"
 #include <evnsq/producer.h>
 #include <evpp/event_loop.h>
 #include <string>
@@ -17,20 +18,6 @@ void OnReady(evpp::EventLoop* loop, evnsq::Producer* producer) {
 	producer->Close();
 	loop->Stop();
 }
-
-struct WSA {
-	WSA() {
-		WSADATA wsaData = { 0 };
-		if (WSAStartup(0x202, &wsaData) != 0) {
-			throw std::runtime_error("WSAStartup() failed");
-		}
-	}
-	~WSA() {
-		try {
-			WSACleanup();
-		} catch (...) {}
-	}
-};
 
 int main(int argc, char* argv[]) {
 	WSA wsa;
