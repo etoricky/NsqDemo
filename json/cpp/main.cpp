@@ -42,15 +42,12 @@ class NsqSender {
 private:	
 	evpp::EventLoop loop;
 	evnsq::Producer producer;
-	std::string ip;
-	std::string topic;
 	LockingQueue<std::string> items;
 	std::thread thread;
 	std::thread event;
 	std::atomic<bool> terminate = false;
 public:
-	NsqSender(const std::string& ip, const std::string& topic)
-		: producer(&loop, evnsq::Option()), ip(ip), topic(topic) {
+	NsqSender(): producer(&loop, evnsq::Option()) {
 	}
 	~NsqSender() {
 		producer.Close();
@@ -63,9 +60,9 @@ public:
 			event.join();
 		}
 	}
-	void Run() {
+	void Connect(const std::string& ip, const std::string& topic) {
 		producer.ConnectToNSQDs(ip);
-		thread = std::thread([&]() {
+		thread = std::thread([&, topic = topic]() {
 			std::string item;
 			while (!terminate) {
 				bool ok = items.try_pop_for_ms(item, 1000);
@@ -89,8 +86,8 @@ int main(int argc, char* argv[]) {
 	std::string ip = "172.31.118.243:4150";
 	std::string topic = "test";
 	{
-		NsqSender sender(ip, topic);
-		sender.Run();
+		NsqSender sender;
+		sender.Connect(ip, topic);
 		for (int i = 0; i<10; ++i) {
 			sender.Push(GetEmailJson().dump(i));
 			std::this_thread::sleep_for(std::chrono::milliseconds(500));
