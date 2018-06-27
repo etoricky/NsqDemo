@@ -1,13 +1,15 @@
 #include "nlohmann/json.hpp"
 using json = nlohmann::json;
 
+#include "WSA.h"
+
 #define H_OS_WINDOWS
 #include <evnsq/producer.h>
 #include <evpp/event_loop.h>
-
 #include <string>
-
-
+#include <queue>
+#include <mutex>
+#include <condition_variable>
 
 json GetEmailJson() {
 	json j;
@@ -35,45 +37,23 @@ json GetEmailJson() {
 	return j;
 }
 
-struct WSA {
-	WSA() {
-		WSADATA wsaData = { 0 };
-		if (WSAStartup(0x202, &wsaData) != 0) {
-			throw std::runtime_error("WSAStartup() failed");
-		}
-	}
-	~WSA() {
-		try {
-			WSACleanup();
-		}
-		catch (...) {}
-	}
-};
-
-class NsqSender {
-private:
-	WSA wsa;
-	std::string ip;
-	std::string topic;
-	std::string data;
-public:
-	NsqSender(const std::string& ip, const std::string& topic, const std::string& data)
-		: ip(ip), topic(topic), data(data) {
-		evpp::EventLoop loop;
-		evnsq::Producer producer(&loop, evnsq::Option());
-		producer.SetReadyCallback(std::bind(&NsqSender::OnReady, this, &loop, &producer));
-		producer.ConnectToNSQDs(ip);
-		loop.Run();
-	}
-	void OnReady(evpp::EventLoop* loop, evnsq::Producer* producer) {
-		producer->Publish(topic, data);
-		producer->Close();
-		loop->Stop();
-	}
-};
-
 int main(int argc, char* argv[]) {
-	NsqSender sender("172.31.118.243:4150", "test", GetEmailJson().dump());
+	WSA wsa;
+	std::string ip = "172.31.118.243:4150";
+	std::string topic = "test";
+
+	evpp::EventLoop loop;
+	evnsq::Producer producer(&loop, evnsq::Option());
+	producer.ConnectToNSQDs(ip);
+	auto f = [topic](evpp::EventLoop* loop, evnsq::Producer* producer) {
+		while (true) {
+			producer->Publish(topic, GetEmailJson().dump());
+			std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		}
+	};
+	std::thread publisher(std::bind(f, &loop, &producer));
+	loop.Run();
+
 	std::cout << "Started" << '\n';
 	std::cin.get();
 	return 0;
