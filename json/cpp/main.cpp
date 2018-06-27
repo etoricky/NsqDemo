@@ -45,13 +45,13 @@ int main(int argc, char* argv[]) {
 	evpp::EventLoop loop;
 	evnsq::Producer producer(&loop, evnsq::Option());
 	producer.ConnectToNSQDs(ip);
-	auto f = [topic](evpp::EventLoop* loop, evnsq::Producer* producer) {
+	auto function = [&]() {
 		while (true) {
-			producer->Publish(topic, GetEmailJson().dump());
+			producer.Publish(topic, GetEmailJson().dump());
 			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		}
 	};
-	std::thread publisher(std::bind(f, &loop, &producer));
+	std::thread publisher(function);
 	loop.Run();
 
 	std::cout << "Started" << '\n';
