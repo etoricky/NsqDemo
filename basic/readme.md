@@ -32,9 +32,11 @@ NSQ
     ./nsqd --lookupd-tcp-address=127.0.0.1:4160 --broadcast-address=127.0.0.1
     sudo firewall-cmd --get-active-zones
     sudo firewall-cmd --zone=public --add-port=4150/tcp --permanent
+    sudo firewall-cmd --zone=public --add-port=4160/tcp --permanent
     sudo firewall-cmd --zone=public --add-port=4161/tcp --permanent
     sudo firewall-cmd --zone=public --add-port=4171/tcp --permanent
     sudo firewall-cmd --reload
+    sudo firewall-cmd --list-all
     ./nsqadmin --lookupd-http-address=127.0.0.1:4161
     http://172.31.118.243:4171/
     
