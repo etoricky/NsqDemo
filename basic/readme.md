@@ -22,8 +22,8 @@ Go
     ./hello
 
 
-NSQ
-===
+NSQ on CentOS 7
+===============
 
     wget https://s3.amazonaws.com/bitly-downloads/nsq/nsq-1.0.0-compat.linux-amd64.go1.8.tar.gz
     tar -zxvf nsq-1.0.0-compat.linux-amd64.go1.8.tar.gz
@@ -39,6 +39,30 @@ NSQ
     sudo firewall-cmd --list-all
     ./nsqadmin --lookupd-http-address=127.0.0.1:4161
     http://172.31.118.243:4171/
+    
+    
+NSQ on Windows
+==============
+
+    go1.10.2.windows-amd64.msi
+    Git-2.17.1.2-64-bit.exe
+
+    cmd
+    nsqlookupd
+    nsqd --lookupd-tcp-address=127.0.0.1:4160 --broadcast-address=127.0.0.1
+    sudo firewall-cmd --get-active-zones
+    sudo firewall-cmd --zone=public --add-port=4150/tcp --permanent
+    sudo firewall-cmd --zone=public --add-port=4160/tcp --permanent
+    sudo firewall-cmd --zone=public --add-port=4161/tcp --permanent
+    sudo firewall-cmd --zone=public --add-port=4171/tcp --permanent
+    sudo firewall-cmd --reload
+    sudo firewall-cmd --list-all
+    nsqadmin --lookupd-http-address=127.0.0.1:4161
+    http://172.31.118.249:4171/
+    
+    git bash
+    curl -d 'hello world 1' 'http://127.0.0.1:4151/put?topic=test'
+    curl -d 'hello world 1' 'http://127.0.0.1:4151/pub?topic=test'
     
     
 sender.go
