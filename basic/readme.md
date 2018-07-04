@@ -52,17 +52,21 @@ NSQ on Windows
     nsqd --lookupd-tcp-address=127.0.0.1:4160 --broadcast-address=127.0.0.1
     sudo firewall-cmd --get-active-zones
     sudo firewall-cmd --zone=public --add-port=4150/tcp --permanent
+    sudo firewall-cmd --zone=public --add-port=4151/tcp --permanent
     sudo firewall-cmd --zone=public --add-port=4160/tcp --permanent
     sudo firewall-cmd --zone=public --add-port=4161/tcp --permanent
     sudo firewall-cmd --zone=public --add-port=4171/tcp --permanent
     sudo firewall-cmd --reload
     sudo firewall-cmd --list-all
     nsqadmin --lookupd-http-address=127.0.0.1:4161
+    http://127.0.0.1:4171/
     http://172.31.118.249:4171/
+    
     
     git bash
     curl -d 'hello world 1' 'http://127.0.0.1:4151/put?topic=test'
-    curl -d 'hello world 1' 'http://127.0.0.1:4151/pub?topic=test'
+    curl -d 'hello world 2' 'http://127.0.0.1:4151/pub?topic=test'
+    curl -d 'hello world 3' 'http://172.31.118.249:4151/pub?topic=test'
     
     
 sender.go
