@@ -1,5 +1,6 @@
 #include <string>
 #include "include/curl/curl.h"
+#pragma comment(lib, "libcurl.lib")
 int main(void) {
 	CURLcode res = CURLE_OK;
 	CURL *curl = curl_easy_init();
